@@ -1,0 +1,82 @@
+/*
+ * Copyright (c) Ja Jazz 2018 - All Rights Reserved
+ *
+ * Unauthorized copying of this file, via any medium is strictly prohibited
+ * Proprietary and confidential
+ *
+ * Written by kris, 22/10/18 14:50
+ */
+buildscript {
+    repositories {
+        mavenCentral()
+
+    }
+    dependencies {
+        classpath('org.yaml:snakeyaml:1.18')
+    }
+}
+
+apply plugin: 'docker'
+
+group = 'krisawatson'
+
+def appName = 'delivery-notifications'
+def dockerRepo = 'krisawatson'
+def majorVersion = Integer.parseInt(MAJOR)
+def minorVersion = Integer.parseInt(MINOR)
+def patchVersion = Integer.parseInt(PATCH)
+
+version = majorVersion + '.' + minorVersion + '.' + patchVersion
+
+task buildDocker(type: Docker, dependsOn: build) {
+    dockerfile = file('docker/Dockerfile')
+    if (project.hasProperty("buildType")){
+        dockerfile = file("docker/$buildType/Dockerfile")
+    }
+    tag = dockerRepo + "/" + appName
+    tagVersion = 'latest'
+    push = true
+
+    doFirst {
+        copy {
+            from jar
+            into stageDir
+        }
+    }
+
+    doLast {
+        def patch = Integer.parseInt(PATCH) + 1
+        ant.propertyfile(file: "gradle.properties") {
+            entry(key: "PATCH", value: patch)
+        }
+        version = majorVersion + '.' + minorVersion + '.' + patchVersion
+    }
+}
+
+task deploy() {
+    doLast {
+        exec {
+            commandLine "kubectl", "apply", "-f", "./kubernetes/deployment.yaml"
+        }
+    }
+}
+
+task scale() {
+    group = BasePlugin.BUILD_GROUP
+    doLast {
+        exec {
+            commandLine "kubectl", "scale", "deployment", appName + "-" + majorVersion, "--replicas", "0"
+        }
+        exec {
+            commandLine "kubectl", "scale", "deployment", appName + "-" + majorVersion, "--replicas", "1"
+        }
+    }
+}
+
+task buildDeploy(dependsOn: [buildDocker, deploy]) {
+    group = BasePlugin.BUILD_GROUP
+}
+
+task buildScale(dependsOn: [buildDocker, scale]) {
+    group = BasePlugin.BUILD_GROUP
+}

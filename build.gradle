@@ -1,0 +1,65 @@
+buildscript {
+    ext {
+        micronautVersion = '1.3.1'
+    }
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'se.transmode.gradle:gradle-docker:1.2'
+    }
+}
+
+plugins {
+    id "io.spring.dependency-management" version "1.0.6.RELEASE"
+    id "com.github.johnrengelman.shadow" version "4.0.2"
+    id "groovy"
+    id "application"
+}
+
+apply plugin: 'java'
+apply plugin: 'docker'
+apply plugin: 'io.spring.dependency-management'
+apply from: 'gradle/deployment.gradle'
+
+group = 'com.watsonsoftware'
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+repositories {
+    jcenter()
+    mavenCentral()
+}
+
+dependencyManagement {
+    imports {
+        mavenBom 'io.micronaut:micronaut-bom:1.3.3'
+    }
+}
+
+dependencies {
+    annotationProcessor("org.projectlombok:lombok:1.18.10")
+    compileOnly("org.projectlombok:lombok:1.18.10")
+    compile 'ch.qos.logback:logback-classic:1.2.3'
+    compile 'ch.qos.logback.contrib:logback-json-classic:0.1.5'
+    compile 'ch.qos.logback.contrib:logback-jackson:0.1.5'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.9.5'
+    compile 'org.slf4j:slf4j-api:2.0.0-alpha1'
+    compile 'org.slf4j:slf4j-simple:2.0.0-alpha1'
+}
+
+mainClassName = 'com.watsonsoftware.Application'
+
+shadowJar {
+    mergeServiceFiles()
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': mainClassName
+    }
+}

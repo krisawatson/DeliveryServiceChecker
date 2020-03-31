@@ -1,0 +1,31 @@
+{
+  "requestorigin": "gi",
+  "data": {
+    "service_info": {
+      "fulfillment_type": "DELIVERY",
+      "enable_express": false
+    },
+    "start_date": "2020-04-01T00:00:00+01:00",
+    "end_date": "2020-04-30T00:00:00+01:00",
+    "reserved_slot_id": "",
+    "service_address": {
+      "postcode": "BT148LF",
+      "latitude": "54.635525",
+      "longitude": "-5.960746"
+    },
+    "customer_info": {
+      "account_id": "8470829186"
+    },
+    "order_info": {
+      "order_id": "21180291840",
+      "restricted_item_types": [
+        "New Alcohol Parent"
+      ],
+      "volume": 214.35718700792384,
+      "weight": 83.8713488199666,
+      "sub_total_amount": 157.19,
+      "line_item_count": 57,
+      "total_quantity": 85
+    }
+  }
+}
