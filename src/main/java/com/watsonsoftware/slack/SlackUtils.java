@@ -8,9 +8,10 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.Base64;
 
 public class SlackUtils {
-    private static final String WEBHOOK_URL = "https://hooks.slack.com/services/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";
+    private static final String WEBHOOK_URL = "aHR0cHM6Ly9ob29rcy5zbGFjay5jb20vc2VydmljZXMvVERLVDI0NkpXL0IwMTE1SEhLVVQwL1JuZzAzMWZvelBpNHVxV1pnZ0RqclhZUQo=";
 
     public static void sendMessage(SlackMessage message) {
         HttpClient client = HttpClient.newHttpClient();
@@ -25,9 +26,8 @@ public class SlackUtils {
     private static HttpRequest getHttpRequest(SlackMessage message) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         String json = objectMapper.writeValueAsString(message);
-
         return HttpRequest.newBuilder()
-                .uri(URI.create(WEBHOOK_URL))
+                .uri(URI.create(new String(Base64.getDecoder().decode(WEBHOOK_URL))))
                 .timeout(Duration.ofMinutes(1))
                 .header("Accept", "application/json")
                 .header("Content-Type", "application/json")

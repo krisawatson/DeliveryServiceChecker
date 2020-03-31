@@ -53,6 +53,7 @@ public class CheckAsdaDeliveryTask implements Runnable {
                 handleResponse(response);
             }
         } catch (Exception e) {
+            System.out.println("ERROR - Unexpected exception " + e.getLocalizedMessage());
             log.error("ERROR - unexpected exception ", e);
         }
     }
@@ -70,9 +71,6 @@ public class CheckAsdaDeliveryTask implements Runnable {
                           .uri(URI.create(ASDA_DELIVERY_URL))
                           .timeout(Duration.ofMinutes(1))
                           .header("Content-Type", "application/json")
-                          .header("Cookie", "ASDACOOKIECHECK=ASDACOOKIECHECK; akaau_P1=1585608672~id=e21af79b77dfabe37dfd7fdc430e29dd; TS01f4281b=01c5a4e2f9a7548c98af760e4f06931e38d9bf35b3c2cba144ba78e25444c20fdfd3833113c87388d8108523f6fcae6575e0763c10")
-                          .header("origin", "https://groceries.asda.com")
-                          .header("referer", "https://groceries.asda.com/checkout/book-slot?tab=deliver&origin=/")
                           .POST(BodyPublishers.ofString(source))
                           .build();
     }
