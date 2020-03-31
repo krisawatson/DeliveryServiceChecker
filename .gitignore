@@ -1,23 +1,50 @@
-# Compiled class file
-*.class
+.gradle
+/build/
 
-# Log file
-*.log
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
 
-# BlueJ files
-*.ctxt
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+out/
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
+### NetBeans ###
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
 
-# Package Files #
-*.jar
-*.war
-*.nar
-*.ear
-*.zip
-*.tar.gz
-*.rar
+### Visual Studio Code ###
+.vscode/
+*.code-workspace
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
+### NodeJS ###
+node_modules/
+dumps/
+out-tsc/
+dist/
+www/
+
+### Cordova ###
+build.json
+keystore/
+platforms/
+plugins/android.json
+plugins/browser.json
+plugins/ios.json
+*.apk
+*.keystore
+
+
+.DS_Store
