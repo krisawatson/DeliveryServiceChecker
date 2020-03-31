@@ -1,6 +1,7 @@
 package com.watsonsoftware.slack;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.watsonsoftware.Logger;
 
 import java.io.IOException;
 import java.net.URI;
@@ -19,7 +20,7 @@ public class SlackUtils {
             HttpRequest request = getHttpRequest(message);
             client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException | InterruptedException e) {
-            System.err.println("Failed to send slack message");
+            Logger.warn("Failed to send slack message");
         }
     }
 

@@ -44,7 +44,6 @@ dependencyManagement {
 dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.10")
     compileOnly("org.projectlombok:lombok:1.18.10")
-    implementation 'org.apache.logging.log4j:log4j-slf4j-impl:2.13.0'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.5'
 }
 
@@ -55,7 +54,5 @@ shadowJar {
 }
 
 jar {
-    manifest {
-        attributes 'Main-Class': mainClassName
-    }
+    manifest.attributes('Main-Class': mainClassName)
 }

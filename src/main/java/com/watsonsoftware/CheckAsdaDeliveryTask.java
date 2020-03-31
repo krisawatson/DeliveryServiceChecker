@@ -5,26 +5,19 @@ import com.watsonsoftware.model.AsdaDeliveryInformation;
 import com.watsonsoftware.model.SlotInfo;
 import com.watsonsoftware.slack.SlackMessage;
 import com.watsonsoftware.slack.SlackUtils;
-import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimerTask;
@@ -33,7 +26,6 @@ import java.util.stream.Collectors;
 import static java.net.http.HttpRequest.BodyPublishers;
 import static java.net.http.HttpResponse.BodyHandlers;
 
-@Slf4j
 public class CheckAsdaDeliveryTask extends TimerTask {
 
     private static final String ASDA_DELIVERY_URL = "https://groceries.asda.com/api/v3/slot/view";
@@ -47,19 +39,18 @@ public class CheckAsdaDeliveryTask extends TimerTask {
 
     @Override
     public void run() {
-        log.info("Running request to check for available slots");
+        Logger.info("Running request to check for available slots");
         try {
             HttpRequest request = getHttpRequest();
             HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
             int statusCode = response.statusCode();
             if (statusCode != 200) {
-                log.error("Request failed with error code {}", statusCode);
+                Logger.error("Request failed with error code " + statusCode);
             } else {
                 handleResponse(response);
             }
         } catch (Exception e) {
-            System.out.println("ERROR - Unexpected exception " + e.getLocalizedMessage());
-            log.error("ERROR - unexpected exception ", e);
+            Logger.info("ERROR - Unexpected exception " + e.getLocalizedMessage());
         }
     }
 
@@ -71,7 +62,7 @@ public class CheckAsdaDeliveryTask extends TimerTask {
         source = source.replaceAll("_START_DATE", startDate.toString())
                        .replaceAll("_END_DATE", endDate.toString());
 
-        log.info("Making request between {} and {}", startDate, endDate);
+        Logger.info(String.format("Making request between %s and %s", startDate, endDate));
         return HttpRequest.newBuilder()
                           .uri(URI.create(ASDA_DELIVERY_URL))
                           .timeout(Duration.ofMinutes(1))
@@ -88,7 +79,7 @@ public class CheckAsdaDeliveryTask extends TimerTask {
     }
 
     private void sendSlackMessage(List<String> availableSlots) {
-        log.info("Sending message with available slots {}", availableSlots);
+        Logger.info("Sending message with available slots " + availableSlots);
         String slotDetails = String.join("\n", availableSlots);
         SlackMessage message = SlackMessage.builder()
                                            .channel("random")
@@ -107,9 +98,9 @@ public class CheckAsdaDeliveryTask extends TimerTask {
             asdaDeliveryInformation.getData().getSlotDays().forEach(slotDays ->
                     slotDays.getSlots().forEach(slot -> {
                         if (!"UNAVAILABLE".equals(slot.getSlotInfo().getStatus())) {
-                            log.info("Slot status is {}", slot.getSlotInfo().getStatus());
+                            Logger.info("Slot status is " + slot.getSlotInfo().getStatus());
                             String slots = mapSlotInfo(slot.getSlotInfo());
-                            log.info("Found available slots {}", slots);
+                            Logger.info("Found available slots " + slots);
                             availableSlots.add(slots);
                         }
                     })
@@ -118,8 +109,8 @@ public class CheckAsdaDeliveryTask extends TimerTask {
                 sendSlackMessage(availableSlots);
             }
         } else {
-            log.error("Failed to map response to Delivery Information");
-            log.error("Response was {}", response.body());
+            Logger.error("Failed to map response to Delivery Information");
+            Logger.error("Response was " + response.body());
         }
     }
 }
