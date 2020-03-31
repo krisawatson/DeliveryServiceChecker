@@ -27,7 +27,7 @@ public class SlackUtils {
         ObjectMapper objectMapper = new ObjectMapper();
         String json = objectMapper.writeValueAsString(message);
         return HttpRequest.newBuilder()
-                .uri(URI.create(new String(Base64.getDecoder().decode(WEBHOOK_URL))))
+                .uri(URI.create(new String(Base64.getDecoder().decode(WEBHOOK_URL)).trim()))
                 .timeout(Duration.ofMinutes(1))
                 .header("Accept", "application/json")
                 .header("Content-Type", "application/json")
