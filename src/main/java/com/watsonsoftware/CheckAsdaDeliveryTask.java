@@ -27,18 +27,23 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TimerTask;
 import java.util.stream.Collectors;
 
 import static java.net.http.HttpRequest.BodyPublishers;
 import static java.net.http.HttpResponse.BodyHandlers;
 
 @Slf4j
-public class CheckAsdaDeliveryTask implements Runnable {
+public class CheckAsdaDeliveryTask extends TimerTask {
 
     private static final String ASDA_DELIVERY_URL = "https://groceries.asda.com/api/v3/slot/view";
-    private static final HttpClient client = HttpClient.newHttpClient();
-    private static final ObjectMapper objectMapper = new ObjectMapper();
-    private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mmX");
+    private final HttpClient client;
+    private final ObjectMapper objectMapper;
+
+    CheckAsdaDeliveryTask() {
+        this.client = HttpClient.newHttpClient();
+        this.objectMapper = new ObjectMapper();
+    }
 
     @Override
     public void run() {
