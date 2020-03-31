@@ -13,6 +13,11 @@ public class Application {
     public static void main(String[] args) {
         log.info("Starting application");
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-        scheduler.scheduleAtFixedRate(new CheckAsdaDeliveryTask(), 0, 2, MINUTES);
+        CheckAsdaDeliveryTask task = new CheckAsdaDeliveryTask();
+        try {
+            scheduler.scheduleAtFixedRate(task, 0, 2, MINUTES);
+        } catch (Exception e) {
+            log.error("Error while running scheduled task", e);
+        }
     }
 }
