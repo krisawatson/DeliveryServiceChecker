@@ -39,7 +39,7 @@ public class CheckAsdaDeliveryTask extends TimerTask {
 
     @Override
     public void run() {
-        Logger.info("Running request to check for available slots");
+        Logger.info("Running request to check for available Asda slots");
         try {
             HttpRequest request = getHttpRequest();
             HttpResponse<String> response = client.send(request, BodyHandlers.ofString());

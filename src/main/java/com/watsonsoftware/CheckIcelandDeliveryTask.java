@@ -21,6 +21,7 @@ public class CheckIcelandDeliveryTask extends TimerTask {
 
     @Override
     public void run() {
+        Logger.info("Running request to check for available Iceland slots");
         Set<String> slotDetails = new HashSet<>();
         WebDriver driver = new ChromeDriver();
         WebDriverWait wait = new WebDriverWait(driver, 10000);
@@ -64,13 +65,9 @@ public class CheckIcelandDeliveryTask extends TimerTask {
                 sendSlackMessage(slotDetails);
             }
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            Logger.error("Failed while scraping iceland grocery slot");
+            Logger.error(e.getMessage());
         } finally {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
             driver.quit();
         }
     }
