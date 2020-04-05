@@ -34,7 +34,7 @@ public class CheckIcelandDeliveryTask extends TimerTask {
                     .isSecure(true)
                     .build();
             driver.manage().addCookie(ck);
-            Thread.sleep(1000);
+            Thread.sleep(2000);
             WebElement modalButton = driver.findElement(By.id("modal-close-button"));
             Actions actions = new Actions(driver);
             actions.moveToElement(modalButton).click().perform();
@@ -56,7 +56,7 @@ public class CheckIcelandDeliveryTask extends TimerTask {
                 List<WebElement> slots = currentSayDeliverySlot.findElements(By.className("delivery-schedule-slot"));
                 for (WebElement slot : slots) {
                     String[] texts = slot.getText().split("\\n");
-                    if (!texts[1].equals("Sorry this slot is fully booke")) {
+                    if (!texts[1].equals("Sorry this slot is fully booked")) {
                         slotDetails.add(date);
                     }
                 }
