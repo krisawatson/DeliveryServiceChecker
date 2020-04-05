@@ -28,7 +28,7 @@ import static java.net.http.HttpResponse.BodyHandlers;
 
 public class CheckAsdaDeliveryTask extends TimerTask {
 
-    private static final String ASDA_DELIVERY_URL = "https://groceries.asda.com/api/v3/slot/view";
+    private static final String DELIVERY_URL = "https://groceries.asda.com/api/v3/slot/view";
     private final HttpClient client;
     private final ObjectMapper objectMapper;
 
@@ -64,7 +64,7 @@ public class CheckAsdaDeliveryTask extends TimerTask {
 
         Logger.info(String.format("Making request between %s and %s", startDate, endDate));
         return HttpRequest.newBuilder()
-                          .uri(URI.create(ASDA_DELIVERY_URL))
+                          .uri(URI.create(DELIVERY_URL))
                           .timeout(Duration.ofMinutes(1))
                           .header("Content-Type", "application/json")
                           .POST(BodyPublishers.ofString(source))
