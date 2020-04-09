@@ -18,6 +18,7 @@ public class CheckIcelandDeliveryTask extends TimerTask {
 
     private static final String DELIVERY_URL = "https://www.iceland.co.uk/book-delivery";
     private static final String POSTCODE = "BT14 8LF";
+    private static final Set<String> NOTIFIED_SLOTS = new HashSet<>();
 
     @Override
     public void run() {
@@ -62,9 +63,11 @@ public class CheckIcelandDeliveryTask extends TimerTask {
                 }
             });
             if (!slotDetails.isEmpty()) {
+                slotDetails.removeAll(NOTIFIED_SLOTS);
                 sendSlackMessage(slotDetails);
+                NOTIFIED_SLOTS.addAll(slotDetails);
             }
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             Logger.error("Failed while scraping iceland grocery slot");
             Logger.error(e.getMessage());
         } finally {
