@@ -12,4 +12,6 @@ import lombok.NoArgsConstructor;
 public class IcelandConfig {
     private boolean on;
     private int rate;
+    private String url;
+    private String postcode;
 }

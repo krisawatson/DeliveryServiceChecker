@@ -2,11 +2,17 @@ slack:
   channel: "random"
   username: "Delivery Bot"
   notify:
-    - "<@UDKQ8R6H1>"
-  webhook: "aHR0cHM6Ly9ob29rcy5zbGFjay5jb20vc2VydmljZXMvVERLVDI0NkpXL0IwMTE1SEhLVVQwL1JuZzAzMWZvelBpNHVxV1pnZ0RqclhZUQo"
+    - ""  # From slack you can set users in here to notify, this looks like <@UDKQ8R6H1>
+  webhook: "" # Setup a webhook on slack put in here
 asda:
-  on: false
-  rate: 1
-iceland:
   on: true
+  rate: 1
+  url: "https://groceries.asda.com/api/v3/slot/view"
+  postcode: ""  # Set your postcode so that Asda will find your nearest store
+  accountId: ""  # This is your asda account ID
+  autoPlaceOrder: false
+iceland:
+  on: false
   rate: 5
+  url: "https://www.iceland.co.uk/book-delivery"
+  postcode: ""  # Set your postcode so that Iceland will find your nearest store

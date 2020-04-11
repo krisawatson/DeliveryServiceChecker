@@ -1,4 +1,4 @@
-package com.watsonsoftware.model;
+package com.watsonsoftware.model.asdaorder;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -7,25 +7,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SlotInfo {
+public class Order {
+    @JsonProperty(value = "requestorigin", defaultValue = "gi")
+    private String requestOrigin;
 
-    List<String> reason;
-
-    @JsonProperty("start_time")
-    String startTime;
-
-    @JsonProperty("end_time")
-    String endTime;
-
-    String status;
-
-    @JsonProperty("slot_id")
-    String slotId;
+    private OrderData data;
 }

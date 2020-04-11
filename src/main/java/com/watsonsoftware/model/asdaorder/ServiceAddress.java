@@ -1,5 +1,6 @@
-package com.watsonsoftware.config;
+package com.watsonsoftware.model.asdaorder;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,11 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AsdaConfig {
-    private boolean on;
-    private int rate;
-    private String url;
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class ServiceAddress {
     private String postcode;
-    private String accountId;
-    private boolean autoPlaceOrder;
 }

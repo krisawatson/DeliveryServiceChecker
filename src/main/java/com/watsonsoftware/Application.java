@@ -5,6 +5,8 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.watsonsoftware.config.AsdaConfig;
 import com.watsonsoftware.config.Configuration;
 import com.watsonsoftware.config.IcelandConfig;
+import com.watsonsoftware.store.CheckAsdaDeliveryTask;
+import com.watsonsoftware.store.CheckIcelandDeliveryTask;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,13 +32,14 @@ public class Application {
         try {
             AsdaConfig asdaConfig = config.getAsda();
             if (asdaConfig.isOn()) {
-                CheckAsdaDeliveryTask asdaTask = CheckAsdaDeliveryTask.create(config.getSlack());
+                CheckAsdaDeliveryTask asdaTask = CheckAsdaDeliveryTask.create(config.getSlack(), config.getAsda());
                 new Timer().scheduleAtFixedRate(asdaTask, 0, asdaConfig.getRate() * TIMER_MIN);
             }
 
             IcelandConfig icelandConfig = config.getIceland();
             if (icelandConfig.isOn()) {
-                CheckIcelandDeliveryTask icelandTask = new CheckIcelandDeliveryTask();
+                CheckIcelandDeliveryTask icelandTask =
+                        CheckIcelandDeliveryTask.create(config.getSlack(), config.getIceland());
                 new Timer().scheduleAtFixedRate(icelandTask, 0, icelandConfig.getRate() * TIMER_MIN);
             }
         } catch (Exception e) {
