@@ -4,7 +4,6 @@ import com.watsonsoftware.slack.SlackMessage;
 import com.watsonsoftware.slack.SlackUtils;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.util.HashSet;
@@ -19,12 +18,12 @@ public class CheckIcelandDeliveryTask extends TimerTask {
     private static final String DELIVERY_URL = "https://www.iceland.co.uk/book-delivery";
     private static final String POSTCODE = "BT14 8LF";
     private static final Set<String> NOTIFIED_SLOTS = new HashSet<>();
+    private static final WebDriver driver = new ChromeDriver();
 
     @Override
     public void run() {
         Logger.info("Running request to check for available Iceland slots");
         Set<String> slotDetails = new HashSet<>();
-        WebDriver driver = new ChromeDriver();
         WebDriverWait wait = new WebDriverWait(driver, 10000);
         try {
             driver.get(DELIVERY_URL);
@@ -36,17 +35,15 @@ public class CheckIcelandDeliveryTask extends TimerTask {
                     .build();
             driver.manage().addCookie(ck);
             Thread.sleep(2000);
-            WebElement modalButton = driver.findElement(By.id("modal-close-button"));
-            Actions actions = new Actions(driver);
-            actions.moveToElement(modalButton).click().perform();
+
+            clickPopupIfAppears();
             wait.until(presenceOfElementLocated(By.id("postal-code")));
             WebElement postcodeField = driver.findElement(By.id("postal-code"));
             postcodeField.sendKeys(POSTCODE);
             WebElement postcodeButton = driver.findElement(By.name("dwfrm_singleshipping_shippingAddress_addressFields_checkPostcode"));
             postcodeButton.click();
             Thread.sleep(1000);
-            modalButton = driver.findElement(By.id("modal-close-button"));
-            modalButton.click();
+            clickPopupIfAppears();
             wait.until(presenceOfElementLocated(By.className("delivery-schedule-days")));
             List<WebElement> slotTabs = driver.findElements(By.className("delivery-schedule-day"));
             slotTabs.forEach(slotTab -> {
@@ -84,5 +81,14 @@ public class CheckIcelandDeliveryTask extends TimerTask {
                                            .icon_emoji(":twice:")
                                            .build();
         SlackUtils.sendMessage(message);
+    }
+
+    private void clickPopupIfAppears() {
+        try {
+            WebElement modalButton = driver.findElement(By.id("modal-close-button"));
+            modalButton.click();
+        } catch (NoSuchElementException ex) {
+            Logger.info("Popup didn't appear");
+        }
     }
 }

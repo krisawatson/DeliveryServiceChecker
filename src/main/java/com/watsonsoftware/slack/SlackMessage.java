@@ -1,16 +1,12 @@
 package com.watsonsoftware.slack;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serializable;
 
 @AllArgsConstructor
 @Builder(builderClassName = "Builder")
-@Getter
-@Setter
+@Data
 public class SlackMessage implements Serializable {
 
     private String channel;

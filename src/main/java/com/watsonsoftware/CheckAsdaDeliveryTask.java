@@ -1,6 +1,8 @@
 package com.watsonsoftware;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.watsonsoftware.config.Configuration;
+import com.watsonsoftware.config.SlackConfig;
 import com.watsonsoftware.model.AsdaDeliveryInformation;
 import com.watsonsoftware.model.SlotInfo;
 import com.watsonsoftware.slack.SlackMessage;
@@ -31,10 +33,16 @@ public class CheckAsdaDeliveryTask extends TimerTask {
     private static final String DELIVERY_URL = "https://groceries.asda.com/api/v3/slot/view";
     private final HttpClient client;
     private final ObjectMapper objectMapper;
+    private final SlackConfig slackConfig;
 
-    CheckAsdaDeliveryTask() {
+    CheckAsdaDeliveryTask(SlackConfig slackConfig) {
         this.client = HttpClient.newHttpClient();
         this.objectMapper = new ObjectMapper();
+        this.slackConfig = slackConfig;
+    }
+
+    public static CheckAsdaDeliveryTask create(SlackConfig slackConfig) {
+        return new CheckAsdaDeliveryTask(slackConfig);
     }
 
     @Override
@@ -78,13 +86,14 @@ public class CheckAsdaDeliveryTask extends TimerTask {
                 + slotInfo.getEndTime() + "\n";
     }
 
-    private void sendSlackMessage(List<String> availableSlots) {
+    private void sendSlackMessage(List<String> availableSlots) throws IOException {
         Logger.info("Sending message with available slots " + availableSlots);
         String slotDetails = String.join("\n", availableSlots);
+        String notifyUsers = String.join(" ", slackConfig.getNotify());
         SlackMessage message = SlackMessage.builder()
-                                           .channel("random")
-                                           .username("Delivery Bot")
-                                           .text("<@UDKQ8R6H1> There are available delivery slots for Asda:\n" + slotDetails)
+                                           .channel(slackConfig.getChannel())
+                                           .username(slackConfig.getUsername())
+                                           .text(notifyUsers + " There are available delivery slots for Asda:\n" + slotDetails)
                                            .icon_emoji(":twice:")
                                            .build();
         SlackUtils.sendMessage(message);
