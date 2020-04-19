@@ -11,6 +11,7 @@ asda:
   postcode: ""  # Set your postcode so that Asda will find your nearest store
   accountId: ""  # This is your asda account ID
   autoPlaceOrder: false
+    slotDate: ""  # Earliest date to check for delivery slots, if empty then current date
 iceland:
   on: false
   rate: 5

@@ -20,7 +20,7 @@ public class Application {
     public static void main(String[] args) {
         Logger.info("Starting application");
 
-        InputStream is = CheckAsdaDeliveryTask.class.getResourceAsStream("/configuration.yaml");
+        InputStream is = CheckAsdaDeliveryTask.class.getResourceAsStream("/configuration_local.yaml");
         Configuration config = null;
         try {
             objectMapper.findAndRegisterModules();

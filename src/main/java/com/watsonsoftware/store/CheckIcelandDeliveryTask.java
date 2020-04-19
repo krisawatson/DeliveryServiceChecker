@@ -66,7 +66,7 @@ public class CheckIcelandDeliveryTask extends TimerTask {
                 List<WebElement> slots = currentSayDeliverySlot.findElements(By.className("delivery-schedule-slot"));
                 for (WebElement slot : slots) {
                     String[] texts = slot.getText().split("\\n");
-                    if (!texts[1].equals("Sorry this slot is fully booked")) {
+                    if (!texts[1].equals("Not available - more slots added soon")) {
                         slotDetails.add(date);
                     }
                 }

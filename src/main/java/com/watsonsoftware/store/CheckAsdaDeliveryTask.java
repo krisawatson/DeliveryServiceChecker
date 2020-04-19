@@ -15,17 +15,19 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static java.net.http.HttpRequest.BodyPublishers;
 import static java.net.http.HttpResponse.BodyHandlers;
 
 public class CheckAsdaDeliveryTask extends TimerTask {
+
+    private static final Set<String> NOTIFIED_SLOTS = new HashSet<>();
+
+    private static final AtomicBoolean ALREADY_PLACED_ORDER = new AtomicBoolean(false);
 
     private final HttpClient client;
     private final ObjectMapper objectMapper;
@@ -92,7 +94,8 @@ public class CheckAsdaDeliveryTask extends TimerTask {
             AtomicReference<String> bookableSlot = new AtomicReference<>();
             asdaDeliveryInformation.getData().getSlotDays().forEach(slotDays ->
                     slotDays.getSlots().forEach(slot -> {
-                        if (!"UNAVAILABLE".equals(slot.getSlotInfo().getStatus())) {
+                        SlotInfo slotInfo = slot.getSlotInfo();
+                        if (!"UNAVAILABLE".equals(slotInfo.getStatus())) {
                             Logger.info("Slot status is " + slot.getSlotInfo().getStatus());
                             String slots = mapSlotInfo(slot.getSlotInfo());
                             Logger.info("Found available slots " + slots);
@@ -104,11 +107,14 @@ public class CheckAsdaDeliveryTask extends TimerTask {
                     })
             );
             if (!availableSlots.isEmpty()) {
-                if (asdaConfig.isAutoPlaceOrder()) {
+                availableSlots.removeAll(NOTIFIED_SLOTS);
+                if (asdaConfig.isAutoPlaceOrder() && !ALREADY_PLACED_ORDER.get()) {
                     makeHttpRequest(Optional.of(bookableSlot.get()), true);
+                    ALREADY_PLACED_ORDER.set(true);
                 } else {
                     SlackUtils.sendNotificationSlackMessage(slackConfig, "Asda", availableSlots);
                 }
+                NOTIFIED_SLOTS.addAll(availableSlots);
             }
         } else {
             Logger.error("Failed to map response to Delivery Information");
@@ -125,7 +131,10 @@ public class CheckAsdaDeliveryTask extends TimerTask {
 
     private OrderData buildAsdaOrderData(AsdaConfig asdaConfig, OrderInfo orderInfo, Optional<String> availableSlot) {
         ZonedDateTime startDate = LocalDate.now().atStartOfDay().atZone(ZoneId.of("+01:00"));
-        ZonedDateTime endDate = startDate.plusMonths(1);
+        if (!asdaConfig.getSlotDate().isEmpty()) {
+            startDate = LocalDate.parse(asdaConfig.getSlotDate()).atStartOfDay().atZone(ZoneId.of("+01:00"));
+        }
+        ZonedDateTime endDate = startDate.plusWeeks(2);
         Logger.info(String.format("Making request between %s and %s", startDate, endDate));
         ServiceInfo serviceInfo = buildServiceInfo();
         ServiceAddress serviceAddress = buildServiceAddress(asdaConfig.getPostcode().replaceAll(" ", ""));

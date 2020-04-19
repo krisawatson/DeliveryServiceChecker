@@ -16,4 +16,5 @@ public class AsdaConfig {
     private String postcode;
     private String accountId;
     private boolean autoPlaceOrder;
+    private String slotDate;
 }
